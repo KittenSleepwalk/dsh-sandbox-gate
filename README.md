@@ -137,19 +137,42 @@ Minimum layout inside `<sandbox-root>`:
 └─ runtimes/windows-x64/…   # node.exe + dsh + pnpm, created by the first launch
 ```
 
-### After installing this plugin: update the sandbox source
+### After installing this plugin: hand the sandbox source to the agent
 
-1. **Get the portable distribution** into `<sandbox-root>`:
-   `git clone https://github.com/techjarves/Deepseek-Harness-Portable` (or unzip a release over it).
-   Keep `scripts/` intact.
-2. **Adapt the version pins.** `scripts/portable.mjs` installs whatever `scripts/manifest.json` says, and the
-   upstream manifest may pin an older DSH (e.g. `0.1.7`). Point `deepseekHarness` / `node` at the DSH version
-   you actually run, otherwise the sandbox validates against a different runtime than your host.
-   Read the host version with `sandbox_gate_calibrate` (CLI: `node bin/gate.mjs calibrate`).
-3. **Align the plugin list** so the sandbox mirrors the host: `sandbox_gate_sync`
+You do **not** prepare the sandbox by hand. **Start a DSH session and tell the agent where the sandbox source
+is** — the agent performs the installation. The source comes in one of two forms:
+
+**A. A URL plus the target directory — the agent installs it**
+
+```text
+The sandbox source is https://github.com/techjarves/Deepseek-Harness-Portable
+Install it to: <sandbox-root>
+```
+
+The agent downloads / clones it into `<sandbox-root>` (or unzips a release over it), keeping `scripts/` intact.
+
+**B. A local path pointing at a sandbox you already have**
+
+```text
+The sandbox source is local: D:\DSH-SandBox (already a portable DSH)
+```
+
+The agent skips the download and only verifies the layout above.
+
+Either way, the agent then does the rest:
+
+1. **Adapt the version pins.** `scripts/portable.mjs` installs whatever `scripts/manifest.json` says, and the
+   upstream manifest may pin an older DSH (e.g. `0.1.7`). It points `deepseekHarness` / `node` at the DSH
+   version you actually run, otherwise the sandbox validates against a different runtime than your host.
+   The host version is read with `sandbox_gate_calibrate` (CLI: `node bin/gate.mjs calibrate`).
+2. **Align the plugin list** so the sandbox mirrors the host: `sandbox_gate_sync`
    (CLI: `node bin/gate.mjs sync`) — missing host plugins are filled in automatically with `link:`.
+3. **Back up** before the first launch (see the next section).
 4. **Launch once** so `runtimes/` is populated: `windows.bat`, or
    `node scripts\portable.mjs -- --profile web --port 19071 --no-open`.
+
+If `<sandbox-root>` has no `scripts/portable.mjs`, the plugin will **not** run — it reports that the directory
+is not a portable DSH and asks for the source instead.
 
 ### Back up the portable distribution first
 

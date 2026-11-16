@@ -125,18 +125,41 @@ pnpm add ./kittensleepwalk-dsh-sandbox-gate-1.1.4.tgz
 └─ runtimes/windows-x64/…   # node.exe + dsh + pnpm，首次启动时下载生成
 ```
 
-### 装上本插件之后：更新沙盒源
+### 装上本插件之后：把沙盒源交给智能体
 
-1. **把便携版放进 `<沙盒根>`**：`git clone https://github.com/techjarves/Deepseek-Harness-Portable`
-   （或把 release 解压覆盖进去），保留 `scripts/`。
-2. **做版本适配。** `scripts/portable.mjs` 装的是 `scripts/manifest.json` 里写死的那个 DSH，而上游
+**你不用自己手工准备沙盒。开一段 DSH 会话，把沙盒源地址告诉智能体，由它来装。** 源有两种形态：
+
+**A. 给网址（同时指定安装地址）—— 由智能体安装**
+
+```text
+沙盒源：https://github.com/techjarves/Deepseek-Harness-Portable
+安装到：<沙盒根>
+```
+
+智能体会把它下载 / clone 到 `<沙盒根>`（或把 release 解压覆盖进去），并保留 `scripts/`。
+
+**B. 给本地路径 —— 直接指定已有的沙盒**
+
+```text
+沙盒源：本地 D:\DSH-SandBox（已经是一份便携版 DSH）
+```
+
+智能体不下载，只按上面的目录约定校验一遍。
+
+无论哪种，接下来由智能体完成：
+
+1. **做版本适配。** `scripts/portable.mjs` 装的是 `scripts/manifest.json` 里写死的那个 DSH，而上游
    manifest 可能钉着旧版本（例如 `0.1.7`）。把 `deepseekHarness` / `node` 改成你实际在用的 DSH 版本，
-   否则沙盒验的是另一个运行时，结论不可信。用 `sandbox_gate_calibrate`（CLI：`node bin/gate.mjs calibrate`）
-   读主机版本。
-3. **对齐插件清单**，让沙盒跟上主机：`sandbox_gate_sync`（CLI：`node bin/gate.mjs sync`）——
+   否则沙盒验的是另一个运行时，结论不可信。主机版本用 `sandbox_gate_calibrate`
+   （CLI：`node bin/gate.mjs calibrate`）读。
+2. **对齐插件清单**，让沙盒跟上主机：`sandbox_gate_sync`（CLI：`node bin/gate.mjs sync`）——
    主机有、沙盒缺的会自动用 `link:` 补上。
-4. **先跑一次**，把 `runtimes/` 拉起来：`windows.bat`，或
+3. **先备份**，再首次启动（见下一节）。
+4. **跑一次**，把 `runtimes/` 拉起来：`windows.bat`，或
    `node scripts\portable.mjs -- --profile web --port 19071 --no-open`。
+
+如果 `<沙盒根>` 里没有 `scripts/portable.mjs`，插件**不会硬跑**：它会明确报「这个目录不是便携版 DSH」，
+并回来向你要沙盒源。
 
 ### 先备份这份便携版
 

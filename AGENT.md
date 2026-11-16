@@ -12,6 +12,16 @@
 - 沙盒根：`<沙盒根>`
 - 基线 profile：`web`；基线 active 条目：211
 - 测试端口：从 `19001` 起；永久避开 `8889`、`18787`
+- **沙盒源必须先就位**：`<沙盒根>` 必须是一份便携式 / U 盘版 DSH，硬判据是存在 `scripts/portable.mjs`
+  （`assertSandbox()` 就认这个路径）。用户会在会话里把源交给你，两种形态：
+  - **网址 + 安装地址**：如「沙盒源 `https://github.com/techjarves/Deepseek-Harness-Portable`，装到
+    `<沙盒根>`」→ 由你下载 / clone / 解压到该位置，保留 `scripts/`；
+  - **本地路径**：如「沙盒源 `D:\DSH-SandBox`（已有一份便携版）」→ 不下载，只按目录约定校验。
+
+  就位后按顺序做完再开始验收：`scripts/manifest.json` 的 `deepseekHarness` / `node` 对齐
+  `sandbox_gate_calibrate` 读到的主机版本（适配）→ `sandbox_gate_sync` 对齐插件清单 →
+  `node bin/gate.mjs backup` 备份（`backup-verify` 校验）→ 首次启动拉起 `runtimes/`。
+  **缺 `scripts/portable.mjs` 时不要硬跑**，直接向用户要沙盒源。
 
 ## 1. 硬规则（不得绕过）
 
