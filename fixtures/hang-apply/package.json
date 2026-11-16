@@ -1,0 +1,12 @@
+{
+  "name": "dsh-fixture-hang-apply",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "description": "沙盒校验固定测试件：apply 卡死，启动应超时",
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "engines": { "dsh": ">=0.2.0" }
+  }
+}

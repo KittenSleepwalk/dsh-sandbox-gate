@@ -1,0 +1,12 @@
+{
+  "name": "dsh-fixture-crash-process",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "description": "沙盒校验固定测试件：apply 里直接 process.exit，整个 dsh 进程应崩",
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "engines": { "dsh": ">=0.2.0" }
+  }
+}

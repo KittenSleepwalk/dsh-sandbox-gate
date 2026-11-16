@@ -1,0 +1,3 @@
+- insert:
+    - id: fixture-spawn-tool
+      name: dsh-fixture-spawn-tool

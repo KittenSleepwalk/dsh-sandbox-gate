@@ -1,0 +1,3 @@
+- insert:
+    - id: fixture-host-write
+      name: dsh-fixture-host-write

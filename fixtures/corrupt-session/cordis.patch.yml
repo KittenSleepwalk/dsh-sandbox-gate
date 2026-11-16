@@ -1,0 +1,3 @@
+- insert:
+    - id: fixture-corrupt-session
+      name: dsh-fixture-corrupt-session

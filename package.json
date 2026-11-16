@@ -1,0 +1,57 @@
+{
+  "name": "@kittensleepwalk/dsh-sandbox-gate",
+  "version": "1.1.4",
+  "type": "module",
+  "displayName": "插件设计及安装的必须沙盒校验",
+  "description": "插件设计及安装的必须沙盒校验：在一次性沙盒副本中安装/验收插件，观测启动、session、其他插件与硬件占用；无 pass 凭证的主机安装会被工具守卫拒绝。",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "sandbox-gate": "./bin/gate.mjs",
+    "dshsandbox": "./bin/dshsandbox.mjs"
+  },
+  "files": [
+    "lib",
+    "bin",
+    "canary",
+    "fixtures",
+    "cordis.patch.yml",
+    "README.md",
+    "AGENT.md",
+    "LICENSE",
+    "docs"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "sandbox",
+    "plugin-safety",
+    "verification"
+  ],
+  "author": "kittensleepwalk",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KittenSleepwalk/dsh-sandbox-gate.git"
+  },
+  "homepage": "https://github.com/KittenSleepwalk/dsh-sandbox-gate#readme",
+  "bugs": {
+    "url": "https://github.com/KittenSleepwalk/dsh-sandbox-gate/issues"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "engines": {
+      "dsh": ">=0.2.2-rc.1"
+    }
+  }
+}

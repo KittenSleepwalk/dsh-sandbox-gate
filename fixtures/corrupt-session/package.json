@@ -1,0 +1,12 @@
+{
+  "name": "dsh-fixture-corrupt-session",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "description": "沙盒校验固定测试件：dsh 不崩，但把最新 session 写坏（模拟半成品插件）",
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "engines": { "dsh": ">=0.2.0" }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "dsh-fixture-half-session",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "description": "沙盒校验固定测试件：半成品插件，dsh 不崩但 session 被移走（模拟逻辑没闭环）",
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "engines": { "dsh": ">=0.2.0" }
+  }
+}

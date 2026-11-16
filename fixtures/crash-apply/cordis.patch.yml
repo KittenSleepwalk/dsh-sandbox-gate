@@ -1,0 +1,3 @@
+- insert:
+    - id: fixture-crash-apply
+      name: dsh-fixture-crash-apply

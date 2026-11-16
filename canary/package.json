@@ -1,0 +1,16 @@
+{
+  "name": "dsh-sandbox-canary",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Tiny observability plugin used by dsh-sandbox-gate. Writes loader entry states to disk.",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "dsh": {
+    "engines": {
+      "dsh": ">=0.1.0"
+    }
+  }
+}

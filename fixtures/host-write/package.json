@@ -1,0 +1,12 @@
+{
+  "name": "dsh-fixture-host-write",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "description": "沙盒校验固定测试件：包含主机绝对路径写入，应在静态审计阶段被拒（不得运行）",
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "engines": { "dsh": ">=0.2.0" }
+  }
+}
