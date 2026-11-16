@@ -108,6 +108,13 @@ async function main() {
       print(ensureBackup(paths, config))
       return
     }
+    case 'backup-verify': {
+      // 校验 <sandboxRoot>/backup/portable-* 里每个文件的 sha256（backup.js 生成的说明一直引用它）
+      const report = verifyBackup(paths)
+      print(report)
+      if (!report.ok) process.exitCode = 1
+      return
+    }
     case 'baseline': {
       const inv = cachedInventory(paths, config, { force: Boolean(flags.force) }).inventory
       const built = await ensureBaseline(paths, config, inv, { force: Boolean(flags.force) }, (m) => console.error(m))

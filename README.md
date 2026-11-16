@@ -54,7 +54,7 @@ The host (the DSH Desktop you are using) stays read-only the whole time; all the
 - **Package:** `@kittensleepwalk/dsh-sandbox-gate`
 - **Version:** `1.1.4`
 - **Display name:** 插件设计及安装的必须沙盒校验 (mandatory sandbox verification for plugin design and installation)
-- **Sandbox directory:** `<sandbox-root>`
+- **Sandbox directory:** `<sandbox-root>` — a portable DSH distribution **you supply yourself** (see the next section)
 - **Bins:** `sandbox-gate`, `dshsandbox`
 
 ```bash
@@ -115,6 +115,57 @@ The plugin list is maintained by `sandbox_gate_sync`: whatever the host has and 
 filled in automatically with `link:`; the sandbox may have more, never fewer. It is normal that the
 sandbox has no `sandbox_gate_*` tools — the sandbox plugin is only installed into the pseudo-host or
 the host, never into the sandbox.
+
+---
+
+## 📦 The sandbox source: you must supply a portable DSH
+
+This plugin does **not** ship a DSH runtime. The "sandbox" is a **portable / USB DSH distribution** living in
+`<sandbox-root>`, and **you have to put one there yourself** — this plugin only drives it.
+
+- Reference implementation (what this plugin is developed and tested against):
+  **<https://github.com/techjarves/Deepseek-Harness-Portable>**
+- Any equivalent portable DSH works, as long as the layout below holds.
+
+Minimum layout inside `<sandbox-root>`:
+
+```text
+<sandbox-root>/
+├─ scripts/portable.mjs     # required: assertSandbox() checks exactly this path
+├─ scripts/manifest.json    # pins portableVersion / deepseekHarness / node
+├─ windows.bat              # launcher (linux.sh / mac.sh on other platforms)
+└─ runtimes/windows-x64/…   # node.exe + dsh + pnpm, created by the first launch
+```
+
+### After installing this plugin: update the sandbox source
+
+1. **Get the portable distribution** into `<sandbox-root>`:
+   `git clone https://github.com/techjarves/Deepseek-Harness-Portable` (or unzip a release over it).
+   Keep `scripts/` intact.
+2. **Adapt the version pins.** `scripts/portable.mjs` installs whatever `scripts/manifest.json` says, and the
+   upstream manifest may pin an older DSH (e.g. `0.1.7`). Point `deepseekHarness` / `node` at the DSH version
+   you actually run, otherwise the sandbox validates against a different runtime than your host.
+   Read the host version with `sandbox_gate_calibrate` (CLI: `node bin/gate.mjs calibrate`).
+3. **Align the plugin list** so the sandbox mirrors the host: `sandbox_gate_sync`
+   (CLI: `node bin/gate.mjs sync`) — missing host plugins are filled in automatically with `link:`.
+4. **Launch once** so `runtimes/` is populated: `windows.bat`, or
+   `node scripts\portable.mjs -- --profile web --port 19071 --no-open`.
+
+### Back up the portable distribution first
+
+```bash
+node bin/gate.mjs backup          # snapshot scripts/ + .github/ + README → <sandbox-root>/backup/portable-<version>/
+node bin/gate.mjs backup-verify   # sha256-check every snapshotted file
+```
+
+`backup` excludes `runtimes/`, `data/` and `packages/` (those are downloaded on the first run). The snapshot
+lets you rebuild the sandbox entry points if GitHub is unreachable or upstream deletes the repository.
+`backup/` is **not** shipped in the npm package — it stays on your machine.
+
+> [!NOTE]
+> The portable distribution is a **third-party project**: its code, licence and provenance are its own, not
+> this plugin's. This plugin merely launches it and reads its state. Every backup records the upstream URL in
+> `provenance.json` → `sourceUrl`.
 
 ---
 

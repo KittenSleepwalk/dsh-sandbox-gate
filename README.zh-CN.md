@@ -54,7 +54,7 @@
 - 插件包：`@kittensleepwalk/dsh-sandbox-gate`
 - 版本：`1.1.4`
 - 显示名：插件设计及安装的必须沙盒校验
-- 沙盒目录：`<沙盒根>`
+- 沙盒目录：`<沙盒根>` —— 里面必须是**你自己准备的一份便携式 DSH**（见下一节）
 - 命令行：`sandbox-gate`、`dshsandbox`
 
 ```bash
@@ -103,6 +103,54 @@ pnpm add ./kittensleepwalk-dsh-sandbox-gate-1.1.4.tgz
 - 启动：直接跑 `windows.bat`，或 `node scripts\portable.mjs -- --profile web --port 19071 --no-open`
 
 插件清单由 `sandbox_gate_sync` 维护：主机有、沙盒没有的会自动用 `link:` 补上；沙盒可以多，不能少。沙盒里没有 `sandbox_gate_*` 工具是正常的——沙盒插件只装进拟主机或主机，不装进沙盒。
+
+---
+
+## 📦 沙盒源：便携版 DSH 需要你自己准备
+
+**本插件不打包 DSH 运行时。** 所谓「沙盒」就是放在 `<沙盒根>` 里的一份**便携式 / U 盘版 DSH 发行包**，
+**必须由你自己放进去**——本插件只负责驱动它。
+
+- 参考实现（本插件就是在它上面开发与验证的）：
+  **<https://github.com/techjarves/Deepseek-Harness-Portable>**
+- 任意一款 U 盘便携式 DSH 都可以，只要满足下面的目录约定。
+
+`<沙盒根>` 里至少要长这样：
+
+```text
+<沙盒根>/
+├─ scripts/portable.mjs     # 必需：assertSandbox() 就认这个路径
+├─ scripts/manifest.json    # 钉住 portableVersion / deepseekHarness / node
+├─ windows.bat              # 启动器（Linux / macOS 用 linux.sh / mac.sh）
+└─ runtimes/windows-x64/…   # node.exe + dsh + pnpm，首次启动时下载生成
+```
+
+### 装上本插件之后：更新沙盒源
+
+1. **把便携版放进 `<沙盒根>`**：`git clone https://github.com/techjarves/Deepseek-Harness-Portable`
+   （或把 release 解压覆盖进去），保留 `scripts/`。
+2. **做版本适配。** `scripts/portable.mjs` 装的是 `scripts/manifest.json` 里写死的那个 DSH，而上游
+   manifest 可能钉着旧版本（例如 `0.1.7`）。把 `deepseekHarness` / `node` 改成你实际在用的 DSH 版本，
+   否则沙盒验的是另一个运行时，结论不可信。用 `sandbox_gate_calibrate`（CLI：`node bin/gate.mjs calibrate`）
+   读主机版本。
+3. **对齐插件清单**，让沙盒跟上主机：`sandbox_gate_sync`（CLI：`node bin/gate.mjs sync`）——
+   主机有、沙盒缺的会自动用 `link:` 补上。
+4. **先跑一次**，把 `runtimes/` 拉起来：`windows.bat`，或
+   `node scripts\portable.mjs -- --profile web --port 19071 --no-open`。
+
+### 先备份这份便携版
+
+```bash
+node bin/gate.mjs backup          # 快照 scripts/ + .github/ + README → <沙盒根>/backup/portable-<版本>/
+node bin/gate.mjs backup-verify   # 逐个校验快照文件的 sha256
+```
+
+`backup` **不含** `runtimes/`、`data/`、`packages/`（这些是首次运行时才下载的）。快照的意义是：
+GitHub 不可达、或上游删库时，你仍然能重建沙盒的入口与脚本。`backup/` **不进 npm 包**，只留在你本机。
+
+> [!NOTE]
+> 这份便携版是**第三方项目**：它的代码、许可证与来源都属于它自己，不属于本插件。本插件只负责启动它、
+> 读取它的状态。每次备份都会把上游地址记进 `provenance.json` 的 `sourceUrl`。
 
 ---
 
